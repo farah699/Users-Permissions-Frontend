@@ -15,6 +15,7 @@ import ProfilePage from './pages/ProfilePage';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoadingSpinner from './components/LoadingSpinner';
+import DemoBanner from './components/DemoBanner';
 
 function App() {
   const { checkAuth, isAuthenticated, isLoading } = useAuthStore();
@@ -32,14 +33,16 @@ function App() {
   }
 
   return (
-    <Routes>
-      {/* Public routes */}
-      <Route 
-        path="/login" 
-        element={
-          isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />
-        } 
-      />
+    <div className="min-h-screen bg-secondary-50">
+      <DemoBanner />
+      <Routes>
+        {/* Public routes */}
+        <Route 
+          path="/login" 
+          element={
+            isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />
+          } 
+        />
       
       {/* Protected routes */}
       <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
@@ -52,12 +55,13 @@ function App() {
         <Route path="profile" element={<ProfilePage />} />
       </Route>
 
-      {/* Catch all route */}
-      <Route 
-        path="*" 
-        element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} 
-      />
-    </Routes>
+        {/* Catch all route */}
+        <Route 
+          path="*" 
+          element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} 
+        />
+      </Routes>
+    </div>
   );
 }
 

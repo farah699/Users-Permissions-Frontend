@@ -12,7 +12,7 @@ import {
   CheckIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
-import { usersApi, rolesApi } from '../services/api';
+import { usersApi, rolesApi } from '../services/demoApi';
 import { User, Role, CreateUserData, UpdateUserData, UsersResponse, RolesResponse } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
 

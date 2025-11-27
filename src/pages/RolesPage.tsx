@@ -10,7 +10,7 @@ import {
   XMarkIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
-import { rolesApi, permissionsApi } from '../services/api';
+import { rolesApi, permissionsApi } from '../services/demoApi';
 import { Role, Permission, CreateRoleData, UpdateRoleData, RolesResponse, PermissionsResponse } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
 

@@ -5,6 +5,7 @@ import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '../store/authStore';
 import { LoginCredentials } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { isDemoMode, demoCredentials } from '../services/mockData';
 import toast from 'react-hot-toast';
 
 const LoginPage: React.FC = () => {
@@ -123,17 +124,23 @@ const LoginPage: React.FC = () => {
             </button>
           </div>
 
-          <div className="bg-primary-50 rounded-md p-4">
-            <h3 className="text-sm font-medium text-primary-800 mb-2">
-              Demo Credentials:
-            </h3>
-            <div className="text-xs text-primary-700 space-y-1">
-              <p><strong>Super Admin:</strong> admin@opuslab.com / Admin123!@#</p>
-              <p><strong>Admin:</strong> admin.user@opuslab.com / Admin123!</p>
-              <p><strong>Manager:</strong> manager@opuslab.com / Manager123!</p>
-              <p><strong>User:</strong> john.doe@opuslab.com / User123!</p>
+          {isDemoMode && (
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+              <h3 className="text-sm font-medium text-blue-800 mb-2 flex items-center">
+                🚀 Mode Démonstration
+              </h3>
+              <div className="text-sm text-blue-700 space-y-2">
+                <p><strong>Identifiants de test:</strong></p>
+                <div className="bg-white rounded border border-blue-100 p-3 font-mono text-xs">
+                  <p>📧 Email: {demoCredentials.email}</p>
+                  <p>🔑 Mot de passe: {demoCredentials.password}</p>
+                </div>
+                <p className="text-xs text-blue-600">
+                  Données fictives pour la démonstration - Toutes les fonctionnalités sont disponibles
+                </p>
+              </div>
             </div>
-          </div>
+          )}
         </form>
       </div>
     </div>
