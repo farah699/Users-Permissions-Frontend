@@ -13,19 +13,8 @@ import {
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 import { usersApi, rolesApi } from '../services/api';
-import { User, Role, CreateUserData, UpdateUserData } from '../types';
+import { User, Role, CreateUserData, UpdateUserData, UsersResponse, RolesResponse } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
-
-interface UsersResponse {
-  users: User[];
-  total: number;
-  page: number;
-  pages: number;
-}
-
-interface RolesResponse {
-  roles: Role[];
-}
 
 const UsersPage: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -43,25 +32,19 @@ const UsersPage: React.FC = () => {
   // Fetch users
   const { data: usersData, isLoading: isLoadingUsers, error: usersError } = useQuery<UsersResponse>({
     queryKey: ['users', page, search, sortBy, sortOrder],
-    queryFn: async () => {
-      const response = await usersApi.getUsers({
-        page,
-        limit,
-        search,
-        sortBy,
-        sortOrder
-      });
-      return response.data;
-    }
+    queryFn: () => usersApi.getUsers({
+      page,
+      limit,
+      search,
+      sortBy,
+      sortOrder
+    })
   });
 
   // Fetch roles for dropdown
   const { data: rolesData } = useQuery<RolesResponse>({
     queryKey: ['roles'],
-    queryFn: async () => {
-      const response = await rolesApi.getRoles({ page: 1, limit: 100 });
-      return response.data;
-    }
+    queryFn: () => rolesApi.getRoles({ page: 1, limit: 100 })
   });
 
   // Create user form

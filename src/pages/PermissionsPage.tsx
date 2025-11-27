@@ -12,15 +12,8 @@ import {
   ShieldCheckIcon
 } from '@heroicons/react/24/outline';
 import { permissionsApi } from '../services/api';
-import { Permission, CreatePermissionData, UpdatePermissionData } from '../types';
+import { Permission, CreatePermissionData, UpdatePermissionData, PermissionsResponse } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
-
-interface PermissionsResponse {
-  permissions: Permission[];
-  total: number;
-  page: number;
-  pages: number;
-}
 
 const PermissionsPage: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -38,16 +31,13 @@ const PermissionsPage: React.FC = () => {
   // Fetch permissions
   const { data: permissionsData, isLoading: isLoadingPermissions, error: permissionsError } = useQuery<PermissionsResponse>({
     queryKey: ['permissions', page, search, filterByResource, filterByAction],
-    queryFn: async () => {
-      const response = await permissionsApi.getPermissions({
-        page,
-        limit,
-        search,
-        resource: filterByResource || undefined,
-        action: filterByAction || undefined
-      });
-      return response.data;
-    }
+    queryFn: () => permissionsApi.getPermissions({
+      page,
+      limit,
+      search,
+      resource: filterByResource || undefined,
+      action: filterByAction || undefined
+    })
   });
 
   // Create permission form

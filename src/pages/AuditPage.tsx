@@ -12,15 +12,8 @@ import {
   DocumentArrowDownIcon
 } from '@heroicons/react/24/outline';
 import { auditApi } from '../services/api';
-import { AuditLog } from '../types';
+import { AuditLog, AuditLogsResponse } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
-
-interface AuditLogsResponse {
-  logs: AuditLog[];
-  total: number;
-  page: number;
-  pages: number;
-}
 
 const AuditPage: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -37,18 +30,15 @@ const AuditPage: React.FC = () => {
   // Fetch audit logs
   const { data: auditData, isLoading, error } = useQuery<AuditLogsResponse>({
     queryKey: ['audit-logs', page, search, filterAction, filterResource, dateRange],
-    queryFn: async () => {
-      const response = await auditApi.getAuditLogs({
-        page,
-        limit,
-        search: search || undefined,
-        action: filterAction || undefined,
-        resource: filterResource || undefined,
-        startDate: dateRange.startDate || undefined,
-        endDate: dateRange.endDate || undefined
-      });
-      return response.data;
-    }
+    queryFn: () => auditApi.getAuditLogs({
+      page,
+      limit,
+      search: search || undefined,
+      action: filterAction || undefined,
+      resource: filterResource || undefined,
+      startDate: dateRange.startDate || undefined,
+      endDate: dateRange.endDate || undefined
+    })
   });
 
   const handleSearch = (e: React.FormEvent) => {

@@ -31,28 +31,28 @@ export interface PaginatedResponse<T> {
 }
 
 // Specific API response types for React Query
-export interface UsersResponse extends PaginatedResponse<User> {
+export interface UsersResponse {
   users: User[];
   total: number;
   page: number;
   pages: number;
 }
 
-export interface RolesResponse extends PaginatedResponse<Role> {
+export interface RolesResponse {
   roles: Role[];
   total: number;
   page: number;
   pages: number;
 }
 
-export interface PermissionsResponse extends PaginatedResponse<Permission> {
+export interface PermissionsResponse {
   permissions: Permission[];
   total: number;
   page: number;
   pages: number;
 }
 
-export interface AuditLogsResponse extends PaginatedResponse<AuditLog> {
+export interface AuditLogsResponse {
   logs: AuditLog[];
   total: number;
   page: number;

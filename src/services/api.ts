@@ -208,8 +208,15 @@ export const authApi = {
 
 // Users API
 export const usersApi = {
-  getUsers: (filters: UserFilters): Promise<ApiResponse<PaginatedResponse<User>>> =>
-    apiClient.get('/users', filters),
+  getUsers: async (filters: UserFilters) => {
+    const response = await apiClient.get<{ users: User[]; pagination: any }>('/users', filters);
+    return {
+      users: response.data?.users || [],
+      total: response.data?.pagination?.total || 0,
+      page: response.data?.pagination?.page || 1,
+      pages: response.data?.pagination?.totalPages || 1
+    };
+  },
   
   getUser: (id: string): Promise<ApiResponse<User>> =>
     apiClient.get(`/users/${id}`),
@@ -235,8 +242,15 @@ export const usersApi = {
 
 // Roles API
 export const rolesApi = {
-  getRoles: (filters: RoleFilters): Promise<ApiResponse<PaginatedResponse<Role>>> =>
-    apiClient.get('/roles', filters),
+  getRoles: async (filters: RoleFilters) => {
+    const response = await apiClient.get<{ roles: Role[]; pagination: any }>('/roles', filters);
+    return {
+      roles: response.data?.roles || [],
+      total: response.data?.pagination?.total || 0,
+      page: response.data?.pagination?.page || 1,
+      pages: response.data?.pagination?.totalPages || 1
+    };
+  },
   
   getRole: (id: string): Promise<ApiResponse<Role>> =>
     apiClient.get(`/roles/${id}`),
@@ -259,8 +273,15 @@ export const rolesApi = {
 
 // Permissions API
 export const permissionsApi = {
-  getPermissions: (filters: PermissionFilters): Promise<ApiResponse<PaginatedResponse<Permission>>> =>
-    apiClient.get('/permissions', filters),
+  getPermissions: async (filters: PermissionFilters) => {
+    const response = await apiClient.get<{ permissions: Permission[]; pagination: any }>('/permissions', filters);
+    return {
+      permissions: response.data?.permissions || [],
+      total: response.data?.pagination?.total || 0,
+      page: response.data?.pagination?.page || 1,
+      pages: response.data?.pagination?.totalPages || 1
+    };
+  },
   
   getGroupedPermissions: (): Promise<ApiResponse<GroupedPermissions>> =>
     apiClient.get('/permissions/grouped'),
@@ -289,8 +310,15 @@ export const permissionsApi = {
 
 // Audit API
 export const auditApi = {
-  getAuditLogs: (filters: AuditFilters): Promise<ApiResponse<PaginatedResponse<AuditLog>>> =>
-    apiClient.get('/audit', filters),
+  getAuditLogs: async (filters: AuditFilters) => {
+    const response = await apiClient.get<{ logs: AuditLog[]; pagination: any }>('/audit', filters);
+    return {
+      logs: response.data?.logs || [],
+      total: response.data?.pagination?.total || 0,
+      page: response.data?.pagination?.page || 1,
+      pages: response.data?.pagination?.totalPages || 1
+    };
+  },
   
   getRecentActivity: (limit?: number): Promise<ApiResponse<AuditLog[]>> =>
     apiClient.get('/audit/recent', { limit }),

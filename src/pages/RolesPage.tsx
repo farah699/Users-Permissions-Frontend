@@ -11,19 +11,8 @@ import {
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 import { rolesApi, permissionsApi } from '../services/api';
-import { Role, Permission, CreateRoleData, UpdateRoleData } from '../types';
+import { Role, Permission, CreateRoleData, UpdateRoleData, RolesResponse, PermissionsResponse } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
-
-interface RolesResponse {
-  roles: Role[];
-  total: number;
-  page: number;
-  pages: number;
-}
-
-interface PermissionsResponse {
-  permissions: Permission[];
-}
 
 const RolesPage: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -40,23 +29,17 @@ const RolesPage: React.FC = () => {
   // Fetch roles
   const { data: rolesData, isLoading: isLoadingRoles, error: rolesError } = useQuery<RolesResponse>({
     queryKey: ['roles', page, search],
-    queryFn: async () => {
-      const response = await rolesApi.getRoles({
-        page,
-        limit,
-        search
-      });
-      return response.data;
-    }
+    queryFn: () => rolesApi.getRoles({
+      page,
+      limit,
+      search
+    })
   });
 
   // Fetch permissions for dropdown
   const { data: permissionsData } = useQuery<PermissionsResponse>({
     queryKey: ['permissions'],
-    queryFn: async () => {
-      const response = await permissionsApi.getPermissions({ page: 1, limit: 100 });
-      return response.data;
-    }
+    queryFn: () => permissionsApi.getPermissions({ page: 1, limit: 100 })
   });
 
   // Create role form
