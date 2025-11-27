@@ -74,8 +74,7 @@ const RolesPage: React.FC = () => {
   // Create role mutation
   const createRoleMutation = useMutation({
     mutationFn: async (roleData: CreateRoleData) => {
-      const response = await api.post('/roles', roleData);
-      return response.data;
+      return await rolesApi.createRole(roleData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['roles'] });
@@ -90,8 +89,7 @@ const RolesPage: React.FC = () => {
   // Update role mutation
   const updateRoleMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateRoleData }) => {
-      const response = await api.put(`/roles/${id}`, data);
-      return response.data;
+      return await rolesApi.updateRole(id, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['roles'] });
@@ -106,8 +104,7 @@ const RolesPage: React.FC = () => {
   // Delete role mutation
   const deleteRoleMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await api.delete(`/roles/${id}`);
-      return response.data;
+      await rolesApi.deleteRole(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['roles'] });
@@ -120,10 +117,9 @@ const RolesPage: React.FC = () => {
   });
 
   // Assign permissions mutation
-  const assignPermissionsMutation = useMutation({
+  const updatePermissionsMutation = useMutation({
     mutationFn: async ({ roleId, permissionIds }: { roleId: string; permissionIds: string[] }) => {
-      const response = await api.post(`/roles/${roleId}/permissions`, { permissions: permissionIds });
-      return response.data;
+      return await rolesApi.updateRolePermissions(roleId, permissionIds);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['roles'] });

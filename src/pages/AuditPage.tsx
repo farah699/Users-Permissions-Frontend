@@ -66,24 +66,22 @@ const AuditPage: React.FC = () => {
 
   const exportLogs = async () => {
     try {
-      const response = await api.get('/audit/export', {
-        params: {
-          search: search || undefined,
-          action: filterAction || undefined,
-          resource: filterResource || undefined,
-          startDate: dateRange.startDate || undefined,
-          endDate: dateRange.endDate || undefined
-        },
-        responseType: 'blob'
+      const blob = await auditApi.exportLogs({
+        search: search || undefined,
+        action: filterAction || undefined,
+        resource: filterResource || undefined,
+        startDate: dateRange.startDate || undefined,
+        endDate: dateRange.endDate || undefined
       });
       
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `audit-logs-${new Date().toISOString().split('T')[0]}.csv`);
       document.body.appendChild(link);
       link.click();
       link.remove();
+      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Export failed:', error);
     }
@@ -297,7 +295,7 @@ const AuditPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-secondary-200">
-                {auditData?.logs.map((log) => {
+                {auditData?.logs && Array.isArray(auditData.logs) ? auditData.logs.map((log) => {
                   const { date, time } = formatDateTime(log.createdAt);
                   return (
                     <tr key={log._id} className="hover:bg-secondary-50">
@@ -379,13 +377,19 @@ const AuditPage: React.FC = () => {
                       </td>
                     </tr>
                   );
-                })}
+                }) : (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-4 text-center text-secondary-500">
+                      No audit logs available
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
 
           {/* Empty State */}
-          {auditData?.logs.length === 0 && (
+          {auditData?.logs && auditData.logs.length === 0 && (
             <div className="text-center py-12">
               <ClockIcon className="mx-auto h-12 w-12 text-secondary-400" />
               <h3 className="mt-2 text-sm font-medium text-secondary-900">No audit logs found</h3>

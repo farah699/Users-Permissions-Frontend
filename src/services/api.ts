@@ -17,6 +17,7 @@ import {
   RoleFilters,
   Permission,
   CreatePermissionData,
+  UpdatePermissionData,
   PermissionFilters,
   GroupedPermissions,
   AuditLog,
@@ -25,7 +26,7 @@ import {
 } from '@/types';
 
 // Base API configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000/api';
 
 class ApiClient {
   private client: AxiosInstance;
@@ -153,6 +154,26 @@ class ApiClient {
   delete<T>(url: string): Promise<ApiResponse<T>> {
     return this.request<T>('DELETE', url);
   }
+
+  // Special method for blob responses (like file downloads)
+  async downloadBlob(url: string, params?: any): Promise<Blob> {
+    try {
+      const response = await this.client.request({
+        method: 'GET',
+        url,
+        params,
+        responseType: 'blob',
+      });
+
+      return response.data;
+    } catch (error: any) {
+      throw new Error(
+        error.response?.data?.message || 
+        error.message || 
+        'Download failed'
+      );
+    }
+  }
 }
 
 // Create API client instance
@@ -253,6 +274,9 @@ export const permissionsApi = {
   createPermissionsBulk: (permissions: CreatePermissionData[]): Promise<ApiResponse<Permission[]>> =>
     apiClient.post('/permissions/bulk', { permissions }),
   
+  updatePermission: (id: string, data: UpdatePermissionData): Promise<ApiResponse<Permission>> =>
+    apiClient.put(`/permissions/${id}`, data),
+  
   deletePermission: (id: string): Promise<ApiResponse> =>
     apiClient.delete(`/permissions/${id}`),
   
@@ -276,6 +300,9 @@ export const auditApi = {
   
   getAuditStats: (days?: number): Promise<ApiResponse<AuditStats>> =>
     apiClient.get('/audit/stats', { days }),
+
+  exportLogs: (filters: any): Promise<Blob> =>
+    apiClient.downloadBlob('/audit/export', filters),
 };
 
 export default apiClient;

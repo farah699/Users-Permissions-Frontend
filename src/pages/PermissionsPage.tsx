@@ -65,8 +65,7 @@ const PermissionsPage: React.FC = () => {
   // Create permission mutation
   const createPermissionMutation = useMutation({
     mutationFn: async (permissionData: CreatePermissionData) => {
-      const response = await api.post('/permissions', permissionData);
-      return response.data;
+      return await permissionsApi.createPermission(permissionData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['permissions'] });
@@ -81,8 +80,7 @@ const PermissionsPage: React.FC = () => {
   // Update permission mutation
   const updatePermissionMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdatePermissionData }) => {
-      const response = await api.put(`/permissions/${id}`, data);
-      return response.data;
+      return await permissionsApi.updatePermission(id, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['permissions'] });
@@ -97,8 +95,7 @@ const PermissionsPage: React.FC = () => {
   // Delete permission mutation
   const deletePermissionMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await api.delete(`/permissions/${id}`);
-      return response.data;
+      await permissionsApi.deletePermission(id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['permissions'] });
