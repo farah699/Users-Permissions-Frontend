@@ -25,31 +25,8 @@ export const useAuthStore = create<AuthStore>()(
         try {
           set({ isLoading: true });
           
-          let response;
-          
-          if (isDemoMode) {
-            // Demo mode - simulate login
-            await delay(800); // Simulate network delay
-            
-            if (credentials.email === demoCredentials.email && 
-                credentials.password === demoCredentials.password) {
-              const demoUser = mockUsers[0]; // Admin user
-              const mockTokens = {
-                accessToken: 'demo_access_token_' + Date.now(),
-                refreshToken: 'demo_refresh_token_' + Date.now()
-              };
-              
-              response = mockApiResponse({
-                user: demoUser,
-                ...mockTokens
-              });
-            } else {
-              throw new Error('Invalid demo credentials. Use: admin@demo.com / demo123');
-            }
-          } else {
-            // Real API call
-            response = await authApi.login(credentials);
-          }
+          // Use the demo API which handles demo mode internally
+          const response = await authApi.login(credentials);
           
           if (response.success && response.data) {
             const { user, accessToken, refreshToken } = response.data;
@@ -66,7 +43,7 @@ export const useAuthStore = create<AuthStore>()(
               isLoading: false,
             });
             
-            toast.success(isDemoMode ? 'Demo login successful!' : 'Login successful!');
+            toast.success(isDemoMode ? 'Connexion démo réussie!' : 'Connexion réussie!');
           } else {
             throw new Error(response.message || 'Login failed');
           }
@@ -130,17 +107,7 @@ export const useAuthStore = create<AuthStore>()(
             throw new Error('No refresh token available');
           }
 
-          let response;
-          
-          if (isDemoMode) {
-            // Demo mode - always return a new token
-            await delay(300);
-            response = mockApiResponse({
-              accessToken: 'demo_access_token_refreshed_' + Date.now()
-            });
-          } else {
-            response = await authApi.refreshToken({ refreshToken });
-          }
+          const response = await authApi.refreshToken({ refreshToken });
           
           if (response.success && response.data?.accessToken) {
             const newAccessToken = response.data.accessToken;
