@@ -11,7 +11,7 @@ import {
   FunnelIcon,
   DocumentArrowDownIcon
 } from '@heroicons/react/24/outline';
-import { auditApi } from '../services/demoApi';
+import { auditApi } from '../services/apiWrapper';
 import { AuditLog, AuditLogsResponse } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
 

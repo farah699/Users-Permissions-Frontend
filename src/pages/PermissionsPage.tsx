@@ -11,7 +11,7 @@ import {
   ExclamationTriangleIcon,
   ShieldCheckIcon
 } from '@heroicons/react/24/outline';
-import { permissionsApi } from '../services/demoApi';
+import { permissionsApi } from '../services/apiWrapper';
 import { Permission, CreatePermissionData, UpdatePermissionData, PermissionsResponse } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
 

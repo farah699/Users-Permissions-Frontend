@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import Cookies from 'js-cookie';
 import { AuthStore, LoginCredentials, User, AuthTokens } from '../types';
-import { authApi } from '../services/demoApi';
+import { authApi } from '../services/apiWrapper';
 import { isDemoMode, mockUsers, demoCredentials, delay, mockApiResponse } from '../services/mockData';
 import toast from 'react-hot-toast';
 
@@ -25,31 +25,65 @@ export const useAuthStore = create<AuthStore>()(
         try {
           set({ isLoading: true });
           
-          // Use the demo API which handles demo mode internally
-          const response = await authApi.login(credentials);
-          
-          if (response.success && response.data) {
-            const { user, accessToken, refreshToken } = response.data;
+          if (isDemoMode) {
+            // Force demo mode - never call real API
+            console.log('🚀 DEMO MODE: Using mock authentication');
+            await delay(800);
             
-            // Store tokens in cookies
-            Cookies.set('accessToken', accessToken, TOKEN_COOKIE_OPTIONS);
-            Cookies.set('refreshToken', refreshToken, TOKEN_COOKIE_OPTIONS);
-            
-            set({
-              user,
-              accessToken,
-              refreshToken,
-              isAuthenticated: true,
-              isLoading: false,
-            });
-            
-            toast.success(isDemoMode ? 'Connexion démo réussie!' : 'Connexion réussie!');
+            if (credentials.email === demoCredentials.email && 
+                credentials.password === demoCredentials.password) {
+              const demoUser = mockUsers[0]; // Admin user
+              const mockTokens = {
+                accessToken: 'demo_access_token_' + Date.now(),
+                refreshToken: 'demo_refresh_token_' + Date.now()
+              };
+              
+              // Store tokens in cookies
+              Cookies.set('accessToken', mockTokens.accessToken, TOKEN_COOKIE_OPTIONS);
+              Cookies.set('refreshToken', mockTokens.refreshToken, TOKEN_COOKIE_OPTIONS);
+              
+              set({
+                user: demoUser,
+                accessToken: mockTokens.accessToken,
+                refreshToken: mockTokens.refreshToken,
+                isAuthenticated: true,
+                isLoading: false,
+              });
+              
+              toast.success('🚀 Connexion démo réussie!');
+              return;
+            } else {
+              throw new Error('Identifiants démo incorrects. Utilisez: admin@demo.com / demo123');
+            }
           } else {
-            throw new Error(response.message || 'Login failed');
+            // Real API call
+            const response = await authApi.login(credentials);
+            
+            if (response.success && response.data) {
+              const { user, accessToken, refreshToken } = response.data;
+              
+              // Store tokens in cookies
+              Cookies.set('accessToken', accessToken, TOKEN_COOKIE_OPTIONS);
+              Cookies.set('refreshToken', refreshToken, TOKEN_COOKIE_OPTIONS);
+              
+              set({
+                user,
+                accessToken,
+                refreshToken,
+                isAuthenticated: true,
+                isLoading: false,
+              });
+              
+              toast.success('Connexion réussie!');
+            } else {
+              throw new Error(response.message || 'Login failed');
+            }
           }
         } catch (error: any) {
           set({ isLoading: false });
-          toast.error(error.message || 'Login failed');
+          const errorMessage = error.message || 'Échec de la connexion';
+          toast.error(errorMessage);
+          console.error('Login error:', error);
           throw error;
         }
       },
